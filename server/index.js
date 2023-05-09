@@ -21,6 +21,10 @@ import salesRoutes from "./routes/sales.js";
 
 //nodemon for live server reload
 
+//data imports
+import User from "./models/User.js";
+import { dataUser } from "./data/index.js";
+
 /* CONFIGURATION */
 dotenv.config(); //setup env variable
 const app = express();
@@ -47,5 +51,8 @@ mongoose
   })
   .then(() => {
     app.listen(PORT, () => console.log(`Server Port:${PORT}`));
+
+    // ONLY ADD DATA ONE TIME
+    // User.insertMany(dataUser);
   })
   .catch((err) => console.log(err));
