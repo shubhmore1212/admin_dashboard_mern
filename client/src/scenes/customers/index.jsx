@@ -1,12 +1,114 @@
-import React from "react";
-import { Box, useTheme } from "@mui/material";
+import React, { useState } from "react";
+import {
+  Avatar,
+  Box,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  Collapse,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { useGetCustomersQuery } from "state/api";
 import Header from "components/Header";
 import { DataGrid } from "@mui/x-data-grid";
+import FlexBetween from "components/FlexBetween";
+
+const CustomerCard = ({
+  _id,
+  name,
+  email,
+  phoneNumber,
+  country,
+  occupation,
+  role,
+}) => {
+  const theme = useTheme();
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  return (
+    <Card
+      sx={{
+        backgroundImage: "none",
+        backgroundColor: theme.palette.background.alt,
+        borderRadius: "0.55rem",
+      }}
+    >
+      <CardContent>
+        <Typography
+          sx={{ fontSize: 14 }}
+          color={theme.palette.secondary.main}
+          gutterBottom
+        >
+          {role}
+        </Typography>
+        <Box>
+          <FlexBetween>
+            <Typography variant="h1" fontWeight="bold" component="div">
+              {name}
+            </Typography>
+            <Box marginRight="1rem">
+              <Avatar
+                sx={{
+                  width: 96,
+                  height: 96,
+                  fontSize: "3rem",
+                  fontWeight: "bold",
+                }}
+              >
+                {name.substring(1, 0)}
+              </Avatar>
+            </Box>
+          </FlexBetween>
+        </Box>
+        <Typography
+          sx={{
+            mb: "-1.0rem",
+          }}
+          color={theme.palette.secondary[400]}
+        >
+          {occupation}
+        </Typography>
+      </CardContent>
+      <CardActions>
+        <Button
+          variant="primary"
+          size="small"
+          onClick={() => setIsExpanded(!isExpanded)}
+        >
+          See More
+        </Button>
+      </CardActions>
+      <Collapse
+        in={isExpanded}
+        timeout="auto"
+        unmountOnExit
+        sx={{
+          color: theme.palette.neutral[300],
+        }}
+      >
+        <CardContent
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Typography>{email}</Typography>
+          <Typography>{phoneNumber}</Typography>
+          <Typography>COUNTRY CODE: {country}</Typography>
+        </CardContent>
+      </Collapse>
+    </Card>
+  );
+};
 
 const Customers = () => {
   const theme = useTheme();
   const { data, isLoading } = useGetCustomersQuery();
+  const isNonMobile = useMediaQuery("(min-width:1000px)");
 
   const columns = [
     {
@@ -80,12 +182,32 @@ const Customers = () => {
           },
         }}
       >
-        <DataGrid
-          loading={isLoading || !data}
-          getRowId={(row) => row._id}
-          rows={data || []}
-          columns={columns}
-        />
+        {isNonMobile ? (
+          <DataGrid
+            loading={isLoading || !data}
+            getRowId={(row) => row._id}
+            rows={data || []}
+            columns={columns}
+          />
+        ) : (
+          <Box
+            mt="20px"
+            display="grid"
+            gridTemplateColumns="repeat(4,minmax(0,1fr))"
+            justifyContent="space-between"
+            rowGap="20px"
+            columnGap="1.33%"
+            sx={{
+              "&>div": {
+                gridColumn: "span 4",
+              },
+            }}
+          >
+            {data?.map((customer) => (
+              <CustomerCard key={customer._id} {...customer} />
+            ))}
+          </Box>
+        )}
       </Box>
     </Box>
   );

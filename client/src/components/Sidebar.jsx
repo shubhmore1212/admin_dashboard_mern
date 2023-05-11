@@ -10,6 +10,7 @@ import {
   ListItemIcon,
   ListItemText,
   Typography,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import {
@@ -184,7 +185,11 @@ const Sidebar = (props) => {
           </Box>
 
           {/* USER SECTION */}
-          <Box position="absolute" bottom="2rem">
+          <Box
+            position="absolute"
+            bottom={isNonMobile ? "2rem" : "-12rem"}
+            pb={!isNonMobile ? "1rem" : ""}
+          >
             <Divider />
             <FlexBetween textTransform="none" gap="1rem" m="1.5rem 2rem 0 3rem">
               <Box
